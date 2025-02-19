@@ -14,13 +14,6 @@ IQ Quest is an engaging and challenging intelligence test game designed to stimu
 - 🎨 **Clean Design**: Minimalistic and visually appealing design for an immersive experience.
 - 👥 **Multiplayer Mode (Coming Soon)**: Compete with friends and see who has the highest IQ!
 
-## 📱 Screenshots
-
-Here are some screenshots of the game in action:
-
-![Main Menu](assets/screenshot1.png)
-![In-Game Quiz Screen](assets/screenshot2.png)
-
 ## 🚀 Getting Started
 
 ### Prerequisites
