@@ -4,7 +4,7 @@ plugins {
 
 android {
     namespace 'com.aghakhani.iq_quest'
-    compileSdk 34
+    compileSdk 35
 
     defaultConfig {
         applicationId "com.aghakhani.iq_quest"
