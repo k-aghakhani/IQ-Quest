@@ -30,16 +30,22 @@ public class MainActivity extends AppCompatActivity {
     private String[] questions = { // Array of questions
             "What is the next number in the sequence: 2, 4, 8, 16, ...?",
             "If all Bloops are Razzies and all Razzies are Lazzies, are all Bloops definitely Lazzies?",
-            "Which word is the odd one out?"
+            "Which word is the odd one out?",
+            "How many squares are there in the given figure? (Imagine a large square with smaller squares inside)",
+            "Ali is twice as old as Reza. Five years later, Reza will be 15. How old is Ali now?",
+            "If one clock is 3 minutes slow and another is 2 minutes fast, what is the time difference?"
     };
 
     private String[][] options = { // 2D array of answer options for each question
             {"24", "32", "20", "30"},
             {"Yes", "No", "Maybe", "Cannot be determined"},
-            {"Dog", "Cat", "Table", "Bird"}
+            {"Dog", "Cat", "Table", "Bird"},
+            {"9", "10", "11", "12"},
+            {"30", "25", "35", "40"},
+            {"1 minute", "5 minute", "3 minute", "6 minute"}
     };
 
-    private int[] correctAnswers = {1, 0, 2}; // Array of correct answer indices corresponding to each question
+    private int[] correctAnswers = {1, 0, 2,0,0,1}; // Array of correct answer indices corresponding to each question
 
     // Quiz state
     private int currentQuestionIndex = 0; // Index of the current question being displayed
