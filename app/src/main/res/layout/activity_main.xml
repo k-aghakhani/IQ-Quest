@@ -9,6 +9,7 @@
     android:layout_height="match_parent"
     android:background="@color/white"
     android:padding="16dp"
+    android:layout_marginTop="20dp"
     tools:context=".MainActivity">
 
     <!-- TextView for displaying the question -->
