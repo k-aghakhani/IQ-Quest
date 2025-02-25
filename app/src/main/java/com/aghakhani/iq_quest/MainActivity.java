@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private Button nextButton; // Button to move to the next question
 
     // Quiz data
+    // Quiz data
     private String[] questions = { // Array of questions
             "What is the next number in the sequence: 2, 4, 8, 16, ...?",
             "If all cats are animals and some animals are dogs, are some cats dogs?",
@@ -48,7 +49,16 @@ public class MainActivity extends AppCompatActivity {
             "What is the next number in the Fibonacci sequence: 1, 1, 2, 3, 5, ...?",
             "'If it rains, the street gets wet.' Which statement is true?",
             "The ratio of 2 to 8 is similar to the ratio of 3 to ...?",
-            "If A is greater than B and B is greater than C, which statement is true?"
+            "If A is greater than B and B is greater than C, which statement is true?",
+            "What comes next in the sequence: A, B, C, D, ...?",
+            "Which number is the smallest? (5, 10, 15, 20)",
+            "If you have 3 apples and take away 2, how many do you have?",
+            "What is 2 + 2?",
+            "If a clock shows 3:15, what is the angle between the hour and minute hand?",
+            "Which is heavier: 1 kg of feathers or 1 kg of stones?",
+            "How many sides does a triangle have?",
+            "What comes next in the pattern: 1, 2, 3, 4, ...?",
+            "Which shape has four equal sides?"
     };
 
     private String[][] options = { // 2D array of answer options for each question
@@ -72,11 +82,19 @@ public class MainActivity extends AppCompatActivity {
             {"8", "10", "12", "7"},
             {"If the street is wet, it rained", "If the street is not wet, it did not rain", "If it does not rain, the street is not wet", "None of the above"},
             {"9", "10", "12", "15"},
-            {"A is smaller than C", "A is equal to C", "A is greater than C", "Cannot be determined"}
+            {"A is smaller than C", "A is equal to C", "A is greater than C", "Cannot be determined"},
+            {"E", "F", "G", "H"},
+            {"5", "10", "15", "20"},
+            {"1", "2", "3", "You took 2"},
+            {"3", "4", "5", "6"},
+            {"0°", "45°", "90°", "7.5°"},
+            {"Feathers", "Stones", "Both are equal", "Depends on size"},
+            {"2", "3", "4", "5"},
+            {"5", "6", "7", "8"},
+            {"Circle", "Triangle", "Square", "Pentagon"}
     };
 
-    private int[] correctAnswers = {1, 1, 3, 0, 0, 1, 1, 0, 0, 1, 1, 0, 3, 2, 2, 2, 0, 0, 2, 2, 2}; // Array of correct answer indices corresponding to each question
-
+    private int[] correctAnswers = {1, 1, 3, 0, 0, 1, 1, 0, 0, 1, 1, 0, 3, 2, 2, 2, 0, 0, 2, 2, 2, 0, 0, 3, 1, 2, 2, 1, 0, 2}; // Array of correct answer indices corresponding to each question
 
     // Quiz state
     private int currentQuestionIndex = 0; // Index of the current question being displayed
