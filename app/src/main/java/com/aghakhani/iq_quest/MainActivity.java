@@ -1,6 +1,7 @@
 package com.aghakhani.iq_quest;
 
 import android.content.DialogInterface;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +14,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
-
+    private MediaPlayer mediaPlayer;
     private TextView questionText;
     private RadioGroup optionsGroup;
     private RadioButton option1, option2, option3, option4;
@@ -48,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mediaPlayer = MediaPlayer.create(this, R.raw.lose_sound);
         questionText = findViewById(R.id.questionText);
         optionsGroup = findViewById(R.id.optionsGroup);
         option1 = findViewById(R.id.option1);
@@ -109,6 +111,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showResultDialog(String message) {
+        mediaPlayer.start();
         new AlertDialog.Builder(this)
                 .setTitle("Game Over")
                 .setMessage(message)
