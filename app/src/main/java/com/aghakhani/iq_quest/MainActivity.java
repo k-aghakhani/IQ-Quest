@@ -1,9 +1,6 @@
 package com.aghakhani.iq_quest;
 
-import android.content.DialogInterface;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -11,40 +8,35 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
-    private TextView questionText, statusBar;
+    private TextView questionText, statusText;
     private RadioGroup optionsGroup;
     private RadioButton option1, option2, option3, option4;
     private Button nextButton;
     private ProgressBar progressBar;
 
-    private String[][][] allQuestions = {
-            {
-                    {"What is 2 + 2?", "3", "4", "5", "6", "1"},
-                    {"What is 3 + 5?", "5", "6", "8", "9", "2"},
-                    {"What is 10 - 6?", "3", "4", "5", "6", "2"}
-            },
-            {
-                    {"If 5x = 25, what is x?", "2", "3", "5", "6", "3"},
-                    {"What comes next: 2, 4, 8, 16, ...", "20", "32", "24", "30", "2"},
-                    {"Ali is twice as old as Reza. If Reza is 10, how old is Ali?", "15", "20", "25", "30", "2"}
-            },
-            {
-                    {"If A > B and B > C, which is true?", "A > C", "A < C", "A = C", "Cannot determine", "1"},
-                    {"Which shape has 4 equal sides?", "Triangle", "Rectangle", "Square", "Circle", "3"},
-                    {"What is the next Fibonacci number: 1, 1, 2, 3, 5, ...?", "7", "8", "9", "10", "2"}
-            }
+    private String[][] questions = {
+            // Level 1 - Easy
+            {"What is 5 + 3?", "6", "7", "8", "9", "8"},
+            {"Which is a fruit?", "Carrot", "Potato", "Apple", "Onion", "Apple"},
+            {"How many legs does a cat have?", "2", "3", "4", "5", "4"},
+
+            // Level 2 - Medium
+            {"What is 12 / 4?", "2", "3", "4", "6", "3"},
+            {"What color is an emerald?", "Red", "Green", "Blue", "Yellow", "Green"},
+            {"Who wrote 'Hamlet'?", "Shakespeare", "Dickens", "Hemingway", "Tolkien", "Shakespeare"},
+
+            // Level 3 - IQ Challenge
+            {"Find the missing number: 2, 6, 12, 20, ?", "28", "30", "32", "36", "30"},
+            {"What comes next: A, C, E, G, ?", "H", "I", "J", "K", "I"},
+            {"If a train moves at 90 km/h, how far does it travel in 2.5 hours?", "180 km", "200 km", "225 km", "250 km", "225 km"}
     };
 
-    private int currentLevel = 0;
     private int currentQuestionIndex = 0;
     private int score = 0;
-    private int requiredScores[] = {2, 2, 2};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         questionText = findViewById(R.id.questionText);
-        statusBar = findViewById(R.id.statusBar);
+        statusText = findViewById(R.id.statusText);
         optionsGroup = findViewById(R.id.optionsGroup);
         option1 = findViewById(R.id.option1);
         option2 = findViewById(R.id.option2);
@@ -63,69 +55,51 @@ public class MainActivity extends AppCompatActivity {
 
         loadQuestion();
 
-        nextButton.setOnClickListener(v -> {
-            int selectedId = optionsGroup.getCheckedRadioButtonId();
-            if (selectedId == -1) {
-                Toast.makeText(this, "Please select an answer", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            int selectedAnswer = optionsGroup.indexOfChild(findViewById(selectedId));
-            int correctAnswer = Integer.parseInt(allQuestions[currentLevel][currentQuestionIndex][5]) - 1;
-
-            if (selectedAnswer == correctAnswer) {
-                score++;
-            }
-
-            currentQuestionIndex++;
-
-            if (currentQuestionIndex < allQuestions[currentLevel].length) {
-                loadQuestion();
-            } else {
-                checkProgress();
-            }
-        });
+        nextButton.setOnClickListener(v -> checkAnswer());
     }
 
     private void loadQuestion() {
-        String[] questionData = allQuestions[currentLevel][currentQuestionIndex];
-        questionText.setText(questionData[0]);
-        option1.setText(questionData[1]);
-        option2.setText(questionData[2]);
-        option3.setText(questionData[3]);
-        option4.setText(questionData[4]);
+        if (currentQuestionIndex >= questions.length) {
+            Toast.makeText(this, "Quiz Completed! Your score: " + score, Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+
+        String[] currentQuestion = questions[currentQuestionIndex];
+        questionText.setText(currentQuestion[0]);
+        option1.setText(currentQuestion[1]);
+        option2.setText(currentQuestion[2]);
+        option3.setText(currentQuestion[3]);
+        option4.setText(currentQuestion[4]);
+
         optionsGroup.clearCheck();
 
-        statusBar.setText("Question: " + (currentQuestionIndex + 1) + " / " + allQuestions[currentLevel].length + "  |  Score: " + score);
-        progressBar.setProgress((currentQuestionIndex + 1) * 100 / allQuestions[currentLevel].length);
+        updateStatus();
     }
 
-    private void checkProgress() {
-        if (score >= requiredScores[currentLevel]) {
-            if (currentLevel == allQuestions.length - 1) {
-                showResultDialog("Congratulations! You won the game!");
-            } else {
-                currentLevel++;
-                currentQuestionIndex = 0;
-                score = 0;
-                loadQuestion();
-            }
-        } else {
-            showResultDialog("You didn't pass. Restarting previous level.");
+    private void checkAnswer() {
+        int selectedId = optionsGroup.getCheckedRadioButtonId();
+        if (selectedId == -1) {
+            Toast.makeText(this, "Please select an answer!", Toast.LENGTH_SHORT).show();
+            return;
         }
+
+        RadioButton selectedOption = findViewById(selectedId);
+        String selectedText = selectedOption.getText().toString();
+        String correctAnswer = questions[currentQuestionIndex][5];
+
+        if (selectedText.equals(correctAnswer)) {
+            score += 10;
+        }
+
+        currentQuestionIndex++;
+        progressBar.setProgress((currentQuestionIndex * 100) / questions.length);
+        loadQuestion();
     }
 
-    private void showResultDialog(String message) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Game Over");
-        builder.setMessage(message);
-        builder.setPositiveButton("Retry", (dialog, which) -> {
-            currentQuestionIndex = 0;
-            score = 0;
-            loadQuestion();
-        });
-        builder.setNegativeButton("Exit", (dialog, which) -> finish());
-        builder.setCancelable(false);
-        builder.show();
+    private void updateStatus() {
+        int remaining = questions.length - currentQuestionIndex;
+        statusText.setText("Question: " + (currentQuestionIndex + 1) + "/" + questions.length +
+                " | Remaining: " + remaining + " | Score: " + score);
     }
 }
