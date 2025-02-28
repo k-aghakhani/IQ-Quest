@@ -1,10 +1,8 @@
 package com.aghakhani.iq_quest;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
@@ -21,20 +19,15 @@ public class MainActivity extends AppCompatActivity {
     private Button nextButton;
     private ProgressBar progressBar;
     private CountDownTimer countDownTimer;
-    private final int quizTimeLimit = 5000; // 120,000ms = 120 seconds
+    private final int quizTimeLimit = 120000; // 120 seconds
 
     private String[][] questions = {
-            // Level 1 - Easy
             {"What is 5 + 3?", "6", "7", "8", "9", "8"},
             {"Which is a fruit?", "Carrot", "Potato", "Apple", "Onion", "Apple"},
             {"How many legs does a cat have?", "2", "3", "4", "5", "4"},
-
-            // Level 2 - Medium
             {"What is 12 / 4?", "2", "3", "4", "6", "3"},
             {"What color is an emerald?", "Red", "Green", "Blue", "Yellow", "Green"},
             {"Who wrote 'Hamlet'?", "Shakespeare", "Dickens", "Hemingway", "Tolkien", "Shakespeare"},
-
-            // Level 3 - IQ Challenge
             {"Find the missing number: 2, 6, 12, 20, ?", "28", "30", "32", "36", "30"},
             {"What comes next: A, C, E, G, ?", "H", "I", "J", "K", "I"},
             {"If a train moves at 90 km/h, how far does it travel in 2.5 hours?", "180 km", "200 km", "225 km", "250 km", "225 km"}
@@ -42,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
 
     private int currentQuestionIndex = 0;
     private int score = 0;
+    private int correctAnswers = 0;
+    private int wrongAnswers = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFinish() {
-                showResultDialog("Time's up! Your final score: " + score);
+                showResultDialog("Time's up!");
             }
         }.start();
     }
@@ -83,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
     private void loadQuestion() {
         if (currentQuestionIndex >= questions.length) {
             countDownTimer.cancel();
-            showResultDialog("Quiz Completed! Your score: " + score);
+            showResultDialog("Quiz Completed!");
             return;
         }
 
@@ -111,6 +106,9 @@ public class MainActivity extends AppCompatActivity {
 
         if (selectedText.equals(correctAnswer)) {
             score += 10;
+            correctAnswers++;
+        } else {
+            wrongAnswers++;
         }
 
         currentQuestionIndex++;
@@ -127,7 +125,9 @@ public class MainActivity extends AppCompatActivity {
     private void showResultDialog(String message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Quiz Completed")
-                .setMessage(message)
+                .setMessage(message + "\n\nScore: " + score +
+                        "\nCorrect: " + correctAnswers +
+                        "\nWrong: " + wrongAnswers)
                 .setCancelable(false)
                 .setPositiveButton("OK", (dialog, which) -> finish())
                 .show();
