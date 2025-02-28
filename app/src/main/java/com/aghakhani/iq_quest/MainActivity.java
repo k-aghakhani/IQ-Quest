@@ -1,6 +1,9 @@
 package com.aghakhani.iq_quest;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -12,11 +15,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
-    private TextView questionText, statusText;
+    private TextView questionText, statusText, timerText;
     private RadioGroup optionsGroup;
     private RadioButton option1, option2, option3, option4;
     private Button nextButton;
     private ProgressBar progressBar;
+    private CountDownTimer countDownTimer;
+    private final int quizTimeLimit = 5000; // 120,000ms = 120 seconds
 
     private String[][] questions = {
             // Level 1 - Easy
@@ -45,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
 
         questionText = findViewById(R.id.questionText);
         statusText = findViewById(R.id.statusText);
+        timerText = findViewById(R.id.timerText);
         optionsGroup = findViewById(R.id.optionsGroup);
         option1 = findViewById(R.id.option1);
         option2 = findViewById(R.id.option2);
@@ -53,15 +59,31 @@ public class MainActivity extends AppCompatActivity {
         nextButton = findViewById(R.id.nextButton);
         progressBar = findViewById(R.id.progressBar);
 
+        startTimer();
         loadQuestion();
 
         nextButton.setOnClickListener(v -> checkAnswer());
     }
 
+    private void startTimer() {
+        countDownTimer = new CountDownTimer(quizTimeLimit, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                int secondsRemaining = (int) (millisUntilFinished / 1000);
+                timerText.setText("Time: " + secondsRemaining + "s");
+            }
+
+            @Override
+            public void onFinish() {
+                showResultDialog("Time's up! Your final score: " + score);
+            }
+        }.start();
+    }
+
     private void loadQuestion() {
         if (currentQuestionIndex >= questions.length) {
-            Toast.makeText(this, "Quiz Completed! Your score: " + score, Toast.LENGTH_LONG).show();
-            finish();
+            countDownTimer.cancel();
+            showResultDialog("Quiz Completed! Your score: " + score);
             return;
         }
 
@@ -73,7 +95,6 @@ public class MainActivity extends AppCompatActivity {
         option4.setText(currentQuestion[4]);
 
         optionsGroup.clearCheck();
-
         updateStatus();
     }
 
@@ -101,5 +122,14 @@ public class MainActivity extends AppCompatActivity {
         int remaining = questions.length - currentQuestionIndex;
         statusText.setText("Question: " + (currentQuestionIndex + 1) + "/" + questions.length +
                 " | Remaining: " + remaining + " | Score: " + score);
+    }
+
+    private void showResultDialog(String message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Quiz Completed")
+                .setMessage(message)
+                .setCancelable(false)
+                .setPositiveButton("OK", (dialog, which) -> finish())
+                .show();
     }
 }

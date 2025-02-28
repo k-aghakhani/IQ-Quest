@@ -12,6 +12,17 @@
     android:layout_marginTop="20dp"
     tools:context=".MainActivity">
 
+    <!-- Timer -->
+    <TextView
+        android:id="@+id/timerText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:textColor="@android:color/holo_red_dark"
+        android:gravity="center"
+        android:padding="8dp"
+        android:text="Time: 120s"/>
+
     <!-- Status Bar -->
     <TextView
         android:id="@+id/statusText"
@@ -48,13 +59,7 @@
         android:background="@drawable/question_background"/>
 
     <!-- Answer Options -->
-    <RadioGroup
-        android:id="@+id/optionsGroup"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:background="@drawable/options_background">
-
+    <RadioGroup android:id="@+id/optionsGroup" android:layout_width="match_parent" android:layout_height="wrap_content">
         <RadioButton android:id="@+id/option1" android:layout_width="match_parent" android:layout_height="wrap_content"/>
         <RadioButton android:id="@+id/option2" android:layout_width="match_parent" android:layout_height="wrap_content"/>
         <RadioButton android:id="@+id/option3" android:layout_width="match_parent" android:layout_height="wrap_content"/>
@@ -62,14 +67,7 @@
     </RadioGroup>
 
     <!-- Next Button -->
-    <Button
-        android:id="@+id/nextButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Next"
-        android:textColor="@color/white"
-        android:backgroundTint="@color/primary"
-        android:textSize="18sp"
-        android:paddingVertical="12dp"/>
+    <Button android:id="@+id/nextButton" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:text="Next" android:textColor="@color/white" android:backgroundTint="@color/primary"/>
 
 </LinearLayout>
