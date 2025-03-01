@@ -32,15 +32,46 @@ public class MainActivity extends AppCompatActivity {
 
     // Array of questions: {question, option1, option2, option3, option4, correctAnswer}
     private String[][] questions = {
-            {"What is 5 + 3?", "6", "7", "8", "9", "8"},
-            {"Which is a fruit?", "Carrot", "Potato", "Apple", "Onion", "Apple"},
-            {"How many legs does a cat have?", "2", "3", "4", "5", "4"},
-            {"What is 12 / 4?", "2", "3", "4", "6", "3"},
-            {"What color is an emerald?", "Red", "Green", "Blue", "Yellow", "Green"},
-            {"Who wrote 'Hamlet'?", "Shakespeare", "Dickens", "Hemingway", "Tolkien", "Shakespeare"},
-            {"Find the missing number: 2, 6, 12, 20, ?", "28", "30", "32", "36", "30"},
-            {"What comes next: A, C, E, G, ?", "H", "I", "J", "K", "I"},
-            {"If a train moves at 90 km/h, how far in 2.5 hours?", "180 km", "200 km", "225 km", "250 km", "225 km"}
+            // Easy Level (15 Questions)
+            {"What is 2 + 2?", "3", "4", "5", "6", "4"},
+            {"Which animal is a pet?", "Lion", "Dog", "Tiger", "Bear", "Dog"},
+            {"How many days in a week?", "5", "6", "7", "8", "7"},
+            {"What is 10 - 4?", "5", "6", "7", "8", "6"},
+            {"What color is the sky?", "Red", "Green", "Blue", "Yellow", "Blue"},
+            {"Which is a number?", "Apple", "Three", "Cat", "Tree", "Three"},
+            {"How many fingers on one hand?", "4", "5", "6", "7", "5"},
+            {"What is 3 × 2?", "5", "6", "7", "8", "6"},
+            {"Which is a bird?", "Cat", "Dog", "Sparrow", "Fish", "Sparrow"},
+            {"What comes after Monday?", "Sunday", "Tuesday", "Wednesday", "Friday", "Tuesday"},
+            {"What is 15 - 5?", "8", "9", "10", "11", "10"},
+            {"Which is a shape?", "Car", "Circle", "Book", "Chair", "Circle"},
+            {"How many wheels on a car?", "2", "3", "4", "5", "4"},
+            {"What is 4 + 5?", "8", "9", "10", "11", "9"},
+            {"Which is a fruit?", "Stone", "Banana", "Table", "Shoe", "Banana"},
+
+            // Medium Level (10 Questions)
+            {"What is 7 × 3?", "20", "21", "22", "23", "21"},
+            {"What comes next: 1, 3, 5, 7, ?", "8", "9", "10", "11", "9"},
+            {"Which is the smallest?", "10", "5", "15", "20", "5"},
+            {"If today is Wednesday, what day is it in 2 days?", "Tuesday", "Thursday", "Friday", "Saturday", "Friday"},
+            {"What is 20 ÷ 4?", "4", "5", "6", "7", "5"},
+            {"Which planet is closest to the Sun?", "Earth", "Mars", "Mercury", "Venus", "Mercury"},
+            {"What is 12 + 8?", "18", "19", "20", "21", "20"},
+            {"Find the odd one out: 2, 4, 6, 8, 9", "2", "4", "6", "9", "9"},
+            {"How many months have 31 days?", "10", "11", "12", "7", "7"},
+            {"What is 50 - 15?", "33", "34", "35", "36", "35"},
+
+            // Hard Level (10 Questions)
+            {"What is 15 × 4?", "50", "55", "60", "65", "60"},
+            {"What comes next: 1, 4, 9, 16, ?", "20", "25", "30", "36", "25"},
+            {"If a car travels 60 km/h, how far in 3 hours?", "160 km", "180 km", "200 km", "240 km", "180 km"},
+            {"Which number is missing: 3, 6, 12, ?, 48", "18", "24", "30", "36", "24"},
+            {"What is 72 ÷ 9?", "7", "8", "9", "10", "8"},
+            {"If 5x = 25, what is x?", "4", "5", "6", "7", "5"},
+            {"What comes next: J, F, M, A, ?", "M", "J", "S", "N", "M"},
+            {"How many sides does a hexagon have?", "5", "6", "7", "8", "6"},
+            {"What is 13 squared?", "149", "159", "169", "179", "169"},
+            {"If a clock shows 3:00 now, what time in 5 hours?", "7:00", "8:00", "9:00", "10:00", "8:00"}
     };
 
     private int currentQuestionIndex = 0; // Tracks the current question
