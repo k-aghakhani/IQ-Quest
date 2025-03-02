@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
@@ -36,14 +37,21 @@ public class MainActivity extends AppCompatActivity {
     private CountDownTimer countDownTimer;
     private MediaPlayer correctSound, wrongSound;
     private final int quizTimeLimit = 120000; // 120 seconds for the entire quiz
-    private long timeLeft; // Tracks remaining time for speed bonus
+    private long timeLeft;
 
-    private List<String[]> questions = new ArrayList<>(); // Dynamic list to store fetched questions
-    private int currentQuestionIndex = 0; // Tracks the current question
-    private int score = 0; // Player's total score
-    private int correctAnswers = 0; // Count of correct answers
-    private int wrongAnswers = 0; // Count of wrong answers
-    private int lives = 3; // Player starts with 3 lives
+    private List<String[]> questions = new ArrayList<>(); // Dynamic list for fetched questions
+
+    // Default questions in case fetching fails
+    private String[][] defaultQuestions = {
+            {"What is 2 + 2?", "3", "4", "5", "6", "4"},
+            {"Which is a fruit?", "Carrot", "Potato", "Apple", "Onion", "Apple"}
+    };
+
+    private int currentQuestionIndex = 0;
+    private int score = 0;
+    private int correctAnswers = 0;
+    private int wrongAnswers = 0;
+    private int lives = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,9 +92,24 @@ public class MainActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+                        Log.d("CSV_RESPONSE", "Raw CSV: " + response); // Log raw CSV data
+                        Toast.makeText(MainActivity.this, "CSV fetched successfully", Toast.LENGTH_SHORT).show();
+
                         // Parse the CSV response
                         parseCSV(response);
-                        // Shuffle questions after fetching
+
+                        // Check if questions were parsed successfully
+                        if (questions.isEmpty()) {
+                            Toast.makeText(MainActivity.this, "No questions parsed, using default", Toast.LENGTH_LONG).show();
+                            // Load default questions if CSV parsing fails
+                            for (String[] question : defaultQuestions) {
+                                questions.add(question);
+                            }
+                        } else {
+                            Toast.makeText(MainActivity.this, "Fetched " + questions.size() + " questions", Toast.LENGTH_SHORT).show();
+                        }
+
+                        // Shuffle questions
                         Collections.shuffle(questions);
                         // Start the timer and load the first question
                         startTimer();
@@ -95,7 +118,16 @@ public class MainActivity extends AppCompatActivity {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                Log.e("CSV_ERROR", "Error fetching CSV: " + error.toString());
                 Toast.makeText(MainActivity.this, "Failed to fetch questions: " + error.getMessage(), Toast.LENGTH_LONG).show();
+
+                // Load default questions on failure
+                for (String[] question : defaultQuestions) {
+                    questions.add(question);
+                }
+                Collections.shuffle(questions);
+                startTimer();
+                loadQuestion();
             }
         });
 
@@ -106,11 +138,22 @@ public class MainActivity extends AppCompatActivity {
     // Parse CSV data into the questions list
     private void parseCSV(String csvData) {
         String[] lines = csvData.split("\n"); // Split by line
-        for (String line : lines) {
-            // Split each line by comma, assuming format: Question,Option1,Option2,Option3,Option4,CorrectAnswer
+        for (int i = 0; i < lines.length; i++) {
+            String line = lines[i].trim();
+            if (line.isEmpty()) continue; // Skip empty lines
+
+            // Split each line by comma
             String[] parts = line.split(",");
-            if (parts.length == 6) { // Ensure there are exactly 6 parts (question + 4 options + answer)
+            Log.d("CSV_PARSE", "Line " + i + ": " + line + " | Parts: " + parts.length);
+
+            // Ensure there are exactly 6 parts (question + 4 options + answer)
+            if (parts.length == 6) {
+                for (int j = 0; j < parts.length; j++) {
+                    parts[j] = parts[j].trim(); // Remove extra whitespace
+                }
                 questions.add(parts);
+            } else {
+                Log.w("CSV_PARSE", "Invalid line format at line " + i + ": " + line);
             }
         }
     }
@@ -120,20 +163,24 @@ public class MainActivity extends AppCompatActivity {
         countDownTimer = new CountDownTimer(quizTimeLimit, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
-                timeLeft = millisUntilFinished; // Update remaining time
+                timeLeft = millisUntilFinished;
                 int secondsRemaining = (int) (millisUntilFinished / 1000);
                 timerText.setText("Time: " + secondsRemaining + "s");
             }
 
             @Override
             public void onFinish() {
-                showResultDialog("Time's up!"); // Show result when time runs out
+                showResultDialog("Time's up!");
             }
         }.start();
     }
 
     // Loads the current question and options into the UI
     private void loadQuestion() {
+        if (questions.isEmpty()) {
+            Toast.makeText(this, "No questions available!", Toast.LENGTH_LONG).show();
+            return;
+        }
         if (currentQuestionIndex >= questions.size() || lives <= 0) {
             countDownTimer.cancel();
             showResultDialog(lives <= 0 ? "No lives left!" : "Quiz Completed!");
@@ -142,7 +189,6 @@ public class MainActivity extends AppCompatActivity {
 
         String[] currentQuestion = questions.get(currentQuestionIndex);
         questionText.setText(currentQuestion[0]);
-        // Fade-in animation for question text
         questionText.setAlpha(0f);
         questionText.animate().alpha(1f).setDuration(300).start();
         option1.setText(currentQuestion[1]);
@@ -150,9 +196,9 @@ public class MainActivity extends AppCompatActivity {
         option3.setText(currentQuestion[3]);
         option4.setText(currentQuestion[4]);
 
-        resetOptionColors(); // Reset option colors to default
-        optionsGroup.clearCheck(); // Clear selected option
-        updateStatus(); // Update status bar
+        resetOptionColors();
+        optionsGroup.clearCheck();
+        updateStatus();
     }
 
     // Checks the selected answer and updates score/lives
@@ -170,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
         if (selectedText.equals(correctAnswer)) {
             selectedOption.setTextColor(ContextCompat.getColor(this, android.R.color.holo_green_dark));
             score += 10;
-            if (timeLeft > (quizTimeLimit - 5000)) score += 5; // Speed bonus
+            if (timeLeft > (quizTimeLimit - 5000)) score += 5;
             correctAnswers++;
             correctSound.start();
         } else {
@@ -181,13 +227,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         currentQuestionIndex++;
-        animateProgressBar(); // Animate progress bar update
-        loadQuestion(); // Load next question
+        animateProgressBar();
+        loadQuestion();
     }
 
     // Skips the current question with a penalty
     private void skipQuestion() {
-        score -= 5; // Penalty for skipping
+        score -= 5;
         currentQuestionIndex++;
         animateProgressBar();
         loadQuestion();
