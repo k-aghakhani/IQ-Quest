@@ -39,7 +39,9 @@ public class MainActivity extends AppCompatActivity {
     private final int quizTimeLimit = 120000; // 120 seconds for the entire quiz
     private long timeLeft;
 
-    private List<String[]> questions = new ArrayList<>(); // Dynamic list for fetched questions
+    private List<String[]> allQuestions = new ArrayList<>(); // Store all fetched questions
+    private List<String[]> questions = new ArrayList<>(); // Store selected questions for the game
+    private final int QUESTIONS_TO_USE = 10; // Set how many questions you want (change this)
 
     // Default questions in case fetching fails
     private String[][] defaultQuestions = {
@@ -99,17 +101,16 @@ public class MainActivity extends AppCompatActivity {
                         parseCSV(response);
 
                         // Check if questions were parsed successfully
-                        if (questions.isEmpty()) {
+                        if (allQuestions.isEmpty()) {
                             Log.w("CSV_PARSE", "No questions parsed from CSV");
                             Toast.makeText(MainActivity.this, "No questions parsed, using default", Toast.LENGTH_LONG).show();
                             loadDefaultQuestions();
                         } else {
-                            Log.d("CSV_PARSE", "Parsed " + questions.size() + " questions");
-                            Toast.makeText(MainActivity.this, "Fetched " + questions.size() + " questions", Toast.LENGTH_SHORT).show();
+                            Log.d("CSV_PARSE", "Parsed " + allQuestions.size() + " questions");
+                            Toast.makeText(MainActivity.this, "Fetched " + allQuestions.size() + " questions", Toast.LENGTH_SHORT).show();
+                            selectRandomQuestions(); // Select random questions
                         }
 
-                        // Shuffle questions
-                        Collections.shuffle(questions);
                         // Start the timer and load the first question
                         startTimer();
                         loadQuestion();
@@ -122,7 +123,6 @@ public class MainActivity extends AppCompatActivity {
 
                 // Load default questions on failure
                 loadDefaultQuestions();
-                Collections.shuffle(questions);
                 startTimer();
                 loadQuestion();
             }
@@ -139,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // Parse CSV data into the questions list (7 columns: Number,Question,Option1,Option2,Option3,Option4,CorrectAnswer)
+    // Parse CSV data into the allQuestions list (7 columns: Number,Question,Option1,Option2,Option3,Option4,CorrectAnswer)
     private void parseCSV(String csvData) {
         String[] lines = csvData.split("\n"); // Split by line
         for (int i = 0; i < lines.length; i++) {
@@ -151,18 +151,29 @@ public class MainActivity extends AppCompatActivity {
             Log.d("CSV_PARSE", "Line " + i + ": " + line + " | Parts: " + parts.length);
 
             // Ensure there are exactly 7 parts (Number + Question + 4 options + Correct Answer)
-            if (parts.length == 7) {
+            if (parts.length >= 7) { // Use >= to handle extra commas gracefully
                 // Create a new array with only Question, Options, and Correct Answer (skip Number)
                 String[] questionData = new String[6];
                 for (int j = 0; j < 6; j++) {
                     questionData[j] = parts[j + 1].replace("\"", "").trim(); // Skip Number (parts[0]), remove quotes
                 }
-                questions.add(questionData);
+                allQuestions.add(questionData);
                 Log.d("CSV_PARSE", "Added question: " + questionData[0]);
             } else {
                 Log.w("CSV_PARSE", "Invalid line format at line " + i + ": " + line);
             }
         }
+    }
+
+    // Select a random subset of questions
+    private void selectRandomQuestions() {
+        Collections.shuffle(allQuestions); // Shuffle all questions
+        int questionsToUse = Math.min(QUESTIONS_TO_USE, allQuestions.size()); // Use the smaller of desired or available
+        for (int i = 0; i < questionsToUse; i++) {
+            questions.add(allQuestions.get(i)); // Add the first X questions
+        }
+        Log.d("RANDOM_QUESTIONS", "Selected " + questions.size() + " random questions");
+        Toast.makeText(this, "Using " + questions.size() + " random questions", Toast.LENGTH_SHORT).show();
     }
 
     // Starts the countdown timer for the quiz
