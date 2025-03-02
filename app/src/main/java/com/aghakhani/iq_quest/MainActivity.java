@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.d("CSV_RESPONSE", "Raw CSV: " + response); // Log raw CSV data
+                        Log.d("CSV_RESPONSE", "Raw CSV: " + response);
                         Toast.makeText(MainActivity.this, "CSV fetched successfully", Toast.LENGTH_SHORT).show();
 
                         // Parse the CSV response
@@ -100,12 +100,11 @@ public class MainActivity extends AppCompatActivity {
 
                         // Check if questions were parsed successfully
                         if (questions.isEmpty()) {
+                            Log.w("CSV_PARSE", "No questions parsed from CSV");
                             Toast.makeText(MainActivity.this, "No questions parsed, using default", Toast.LENGTH_LONG).show();
-                            // Load default questions if CSV parsing fails
-                            for (String[] question : defaultQuestions) {
-                                questions.add(question);
-                            }
+                            loadDefaultQuestions();
                         } else {
+                            Log.d("CSV_PARSE", "Parsed " + questions.size() + " questions");
                             Toast.makeText(MainActivity.this, "Fetched " + questions.size() + " questions", Toast.LENGTH_SHORT).show();
                         }
 
@@ -122,9 +121,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "Failed to fetch questions: " + error.getMessage(), Toast.LENGTH_LONG).show();
 
                 // Load default questions on failure
-                for (String[] question : defaultQuestions) {
-                    questions.add(question);
-                }
+                loadDefaultQuestions();
                 Collections.shuffle(questions);
                 startTimer();
                 loadQuestion();
@@ -135,23 +132,33 @@ public class MainActivity extends AppCompatActivity {
         queue.add(stringRequest);
     }
 
-    // Parse CSV data into the questions list
+    // Load default questions into the list
+    private void loadDefaultQuestions() {
+        for (String[] question : defaultQuestions) {
+            questions.add(question);
+        }
+    }
+
+    // Parse CSV data into the questions list (7 columns: Number,Question,Option1,Option2,Option3,Option4,CorrectAnswer)
     private void parseCSV(String csvData) {
         String[] lines = csvData.split("\n"); // Split by line
         for (int i = 0; i < lines.length; i++) {
             String line = lines[i].trim();
-            if (line.isEmpty()) continue; // Skip empty lines
+            if (line.isEmpty() || i == 0) continue; // Skip empty lines and header row
 
-            // Split each line by comma
+            // Simple split by comma
             String[] parts = line.split(",");
             Log.d("CSV_PARSE", "Line " + i + ": " + line + " | Parts: " + parts.length);
 
-            // Ensure there are exactly 6 parts (question + 4 options + answer)
-            if (parts.length == 6) {
-                for (int j = 0; j < parts.length; j++) {
-                    parts[j] = parts[j].trim(); // Remove extra whitespace
+            // Ensure there are exactly 7 parts (Number + Question + 4 options + Correct Answer)
+            if (parts.length == 7) {
+                // Create a new array with only Question, Options, and Correct Answer (skip Number)
+                String[] questionData = new String[6];
+                for (int j = 0; j < 6; j++) {
+                    questionData[j] = parts[j + 1].replace("\"", "").trim(); // Skip Number (parts[0]), remove quotes
                 }
-                questions.add(parts);
+                questions.add(questionData);
+                Log.d("CSV_PARSE", "Added question: " + questionData[0]);
             } else {
                 Log.w("CSV_PARSE", "Invalid line format at line " + i + ": " + line);
             }
@@ -178,6 +185,7 @@ public class MainActivity extends AppCompatActivity {
     // Loads the current question and options into the UI
     private void loadQuestion() {
         if (questions.isEmpty()) {
+            Log.e("LOAD_QUESTION", "No questions available!");
             Toast.makeText(this, "No questions available!", Toast.LENGTH_LONG).show();
             return;
         }
