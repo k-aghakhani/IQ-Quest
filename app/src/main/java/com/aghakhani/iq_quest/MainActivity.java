@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
 
     private List<String[]> allQuestions = new ArrayList<>(); // Store all fetched questions
     private List<String[]> questions = new ArrayList<>(); // Store selected questions for the game
-    private final int QUESTIONS_TO_USE = 10; // Set how many questions you want (change this)
+    private final int QUESTIONS_TO_USE = 15; // Set how many questions you want (change this)
 
     // Default questions in case fetching fails
     private String[][] defaultQuestions = {
