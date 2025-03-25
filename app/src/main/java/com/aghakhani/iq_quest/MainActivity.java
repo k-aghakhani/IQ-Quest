@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private CountDownTimer countDownTimer;
     private MediaPlayer correctSound, wrongSound;
-    private final int quizTimeLimit = 120000; // 120 seconds for the entire quiz
+    private final int quizTimeLimit = 100000; // 120 seconds for the entire quiz
     private long timeLeft;
 
     private List<String[]> allQuestions = new ArrayList<>(); // Store all fetched questions
