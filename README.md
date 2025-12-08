@@ -89,3 +89,5 @@ If you enjoyed this project, please give it a ⭐️ on GitHub! Your support mea
 - **Repository**: [IQ Quest GitHub](https://github.com/k-aghakhani/IQ-Quest)
 - **Issues**: [Report bugs or suggest features here](https://github.com/k-aghakhani/IQ-Quest/issues)
 - **Pull Requests**: [Contribute to the project here](https://github.com/k-aghakhani/IQ-Quest/pulls)
+
+Made with ❤️ and ☕
